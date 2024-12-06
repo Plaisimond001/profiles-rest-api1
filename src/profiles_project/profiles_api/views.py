@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import filters
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.authtoken.views import ObtainAuthToken
 
 from . import models
 from . import permissions
@@ -109,3 +111,18 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.UpdateOwnProfile,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'email',)
+
+class LoginViewSet(viewsets.ViewSet):
+    """Checks email and password and returns an auth token."""
+
+    serializer_class = AuthTokenSerializer
+
+    def create(self, request):
+       """Use the ObtainAuthToken APIView to validate and create a token."""
+       # Créer une instance de la vue ObtainAuthToken pour valider les informations d'identification
+       obtain_auth_token = ObtainAuthToken()
+       # Appel de la méthode `post()` de `ObtainAuthToken` pour obtenir un token
+       response = obtain_auth_token.post(request)
+       # Renvoie la réponse obtenue de `ObtainAuthToken`
+       return response
+       #return ObtainAuthToken.post(request)
